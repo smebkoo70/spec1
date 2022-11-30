@@ -1,14 +1,21 @@
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
+from w3lib import html
+import requests
+from lxml import etree
+from w3lib.html import remove_comments
+import csv
 # html=urlopen("http://www.pythonscraping.com/pages/warandpeace.html")
-
+# /html/body/div/div[3]/table[1]/tbody/tr[1]/td
+# /html/body/div/div[3]/table[1]/tbody/tr[12]/td
 html = urlopen("https://spec.org/cpu2017/results/res2022q1/cpu2017-20211216-30441.html")
+
 # 解析HTML页面；
 soup=BeautifulSoup(html)
 
 # hardware
 print("Hardwareinfo:")
-hardwarelist = soup.findAll("table",{"id":"Hardware"})
+hardwarelist = soup.findAll("table",{"id":"Hardware"},"tbody")
 
 for harderware in hardwarelist:
     print(harderware.get_text())

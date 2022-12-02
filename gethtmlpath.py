@@ -5,6 +5,7 @@
 # /html/body/div[2]/table/tbody/tr[258]/td[2]/span/a[1]
 
 # /html/body/div[3]/table/tbody/tr[1]/td[2]/span/a[1]
+#
 
 # /html/body/div[5]/table/tbody/tr[191]/td[2]/span/a[1]
 
@@ -41,7 +42,7 @@ j = 1
 for i in range(1, 260):
     try:
         htmllist1[j] = html.xpath('/html/body/div[2]/table/tbody/tr[' + str(i) + ']/td[2]/span/a[1]/@href')[0]
-        print("i == " + str(i) + " j == " + str(j) + " " + htmllist1[j])
+        # print("i == " + str(i) + " j == " + str(j) + " " + htmllist1[j])
         j = j + 1
 
     except:
@@ -57,3 +58,27 @@ print()
 
 for it in range(1, 225):
     print(str(it) + " == " + htmllist1[it])
+
+
+htmllist2 = list(range(260))
+j = 1
+
+for i in range(1, 260):
+    try:
+        htmllist2[j] = html.xpath('/html/body/div[3]/table/tbody/tr[' + str(i) + ']/td[2]/span/a[1]/@href')[0]
+        # print("i == " + str(i) + " j == " + str(j) + " " + htmllist1[j])
+        j = j + 1
+
+    except:
+        pass
+        # print("i == " + str(i) + " j == " + str(j))
+
+    else:
+        pass
+
+
+
+print()
+
+for it in range(1, 159):
+    print(str(it) + " == " + htmllist2[it])

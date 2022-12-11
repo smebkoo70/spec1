@@ -26,8 +26,8 @@ html = etree.HTML(response.text)
 # print(cell1)
 # print(cell2)
 softwarelist = list(range(12))
-for i in range(1,10):
+for i in range(1,11):
     softwarelist[i] = html.xpath('/html/body/div/div[3]/table[2]/tbody/tr[' + str(i) +']/td')[0].text
 
-for i in range(1,10):
+for i in range(1,11):
     print(softwarelist[i])

@@ -21,9 +21,10 @@ html = etree.HTML(response.text)
 # cell2 = html.xpath('/html/body/div/div[3]/table[1]/tbody/tr[2]/td')[0].text  # Max MHz
 # print(cell1)
 # print(cell2)
-hardwarelist = list(range(12))
-for i in range(1,12):
+# /html/body/div/div[3]/table[1]/tbody/tr[12]/td
+hardwarelist = list(range(13))
+for i in range(1,13):
     hardwarelist[i] = html.xpath('/html/body/div/div[3]/table[1]/tbody/tr[' + str(i) +']/td')[0].text
 
-for i in range(1,12):
+for i in range(1,13):
     print(hardwarelist[i])

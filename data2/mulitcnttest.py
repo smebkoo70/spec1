@@ -21,26 +21,39 @@ headers = {
 
 # 自定义函数,实现多线程爬虫，但是保证不了数据顺序了，没办法。
 def query(url):
-    requests.get(url)
-    response = requests.get(url, headers=headers)
-    response.encoding = "utf-8"
-    # print(response.text)
+    try:
+        requests.get(url)
+        response = requests.get(url, headers=headers)
+        response.encoding = "utf-8"
+        # print(response.text)
 
-    # 解析网页源代码
-    html = etree.HTML(response.text)
-    # cell1 = html.xpath('/html/body/div/div[3]/table[1]/tbody/tr[1]/td')[0].text  # CPU Name
-    # cell2 = html.xpath('/html/body/div/div[3]/table[1]/tbody/tr[2]/td')[0].text  # Max MHz
-    # print(cell1)
-    # print(cell2)
-    hardwarelist = list(range(15))
-    for i in range(0, 12):
-        hardwarelist[i] = html.xpath('/html/body/div/div[3]/table[1]/tbody/tr[' + str(i + 1) + ']/td')[0].text
-    MySQLhard(url, cnt, hardwarelist)
+        # 解析网页源代码
+        html = etree.HTML(response.text)
+        # cell1 = html.xpath('/html/body/div/div[3]/table[1]/tbody/tr[1]/td')[0].text  # CPU Name
+        # cell2 = html.xpath('/html/body/div/div[3]/table[1]/tbody/tr[2]/td')[0].text  # Max MHz
+        # print(cell1)
+        # print(cell2)
+        softwarelist = list(range(15))
+        for i in range(0, 10):
+            try:
+                if (html.xpath('/html/body/div/div[3]/table[2]/tbody/tr[' + str(i + 1) + ']/td')[0].text == ""):
+                    softwarelist[i] = "0"
+                else:
+                    softwarelist[i] = html.xpath('/html/body/div/div[3]/table[2]/tbody/tr[' + str(i + 1) + ']/td')[0].text
+
+            except:
+                softwarelist[i] = "0"
+
+            #                 html.xpath('/html/body/div/div[3]/table[2]/tbody/tr[' + str(i) + ']/td')[0].text
+        MySQLhard(url, cnt, softwarelist)
+    except Exception as e:
+        print("queryerror: " + str(e))
+
 
 
 def gethtmlpath():
     try:
-        sql = "select * from htmlpath2017"
+        sql = "select * from htmlpath2020"
         # engine = create_engine('mysql+pymysql://root:@127.0.0.1:3306/spec')
         # df_read = pd.read_sql_query(sql, engine)
 
@@ -65,12 +78,15 @@ def gethtmlpath():
 sql1 = "123456"
 
 def MySQLhard(url1, cnt1, hardinfo = []):
-    sql1 = "INSERT INTO cpuhardinfo (cpuname, maxmhz, nominal, enabled, orderable, cachel1, l2, l3, cacheother, memory, storage, other, htmlpath) VALUES ('" + str(
+    sql1 = "INSERT INTO cpusoftinfo (os, compiler, parallel, firmware, filesystem, systemstate, basepointers, peakpointers, other, power, management, htmlpath, id) VALUES ('" + str(
         hardinfo[0]) + "','" + str(hardinfo[1]) + "','" + str(hardinfo[2]) + "','" + str(hardinfo[3]) + "','" + str(
         hardinfo[4]) + "','" + str(hardinfo[5]) + "','" + str(hardinfo[6]) + "','" + str(hardinfo[7]) + "','" + str(
-        hardinfo[8]) + "','" + str(hardinfo[9]) + "','" + str(hardinfo[10]) + "','" + str(hardinfo[11]) + "','" + url1 + "')"
+        hardinfo[8]) + "','" + str(hardinfo[9]) + "','" + str(hardinfo[10]) + "','" + url1 + "', null)"
 
     try:
+        dataconnect = mysql.connect(host="localhost", port=3306, user="root", passwd="", db="spec")
+        datacursor = dataconnect.cursor()
+        #datacursor.execute(sql1)
         # sql = "INSERT INTO cpuhardinfo ('cpuname', 'maxmhz', 'nominal', 'enabled', 'orderable', 'cachel1', 'l2', 'l3', 'cacheother', 'memory', 'storage', 'other') VALUES (''" + str(hardinfo[0]) + "','" +  hardinfo[1] + "','" +  hardinfo[2]  + "','" +  hardinfo[3] + "','" +  hardinfo[4] + "','" +  hardinfo[5]  + "','" +  hardinfo[6]  + "','" +  hardinfo[7]  + "','" +  hardinfo[8]  + "','" +  hardinfo[9]  + "','" +  hardinfo[10]  + "','" +  hardinfo[11] + "')'"
         # sql1 = "INSERT INTO cpuhardinfo ('cpuname', 'maxmhz', 'nominal', 'enabled', 'orderable', 'cachel1', 'l2', 'l3', 'cacheother', 'memory', 'storage', 'other') VALUES (''" + str(hardinfo[0]) + "','" +  str(hardinfo[1]) + "','" +  str(hardinfo[2])  + "','" +  str(hardinfo[3]) + "','" +  str(hardinfo[4]) + "','" +  str(hardinfo[5])  + "','" +  str(hardinfo[6])  + "','" +  str(hardinfo[7])  + "','" +  str(hardinfo[8])  + "','" +  str(hardinfo[9])  + "','" + str(hardinfo[10])  + "','" +  str(hardinfo[11]) + "')'"
         # cnt1++
@@ -78,10 +94,13 @@ def MySQLhard(url1, cnt1, hardinfo = []):
         cnt1 += 1
         # cnt = cnt1
         # print("insert info success!" + " " )
-        print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+        print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+        datacursor.close()
+        dataconnect.close()
+
 
     except Exception as e:
-        print("mysqlhard " + str(e))
+        print("MySQLharderror: " + str(e))
 
 
 
@@ -90,7 +109,7 @@ def MySQLhard(url1, cnt1, hardinfo = []):
 def main():
     cnt = 0
     gethtmlpath()
-    pool = Pool(20)
+    pool = Pool(8)
     pool.map(query, url_list)
 
 main()

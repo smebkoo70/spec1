@@ -53,7 +53,7 @@ def query(url):
 
 def gethtmlpath():
     try:
-        sql = "select * from htmlpath2021"
+        sql = "select * from htmlpath2022"
         # engine = create_engine('mysql+pymysql://root:@127.0.0.1:3306/spec')
         # df_read = pd.read_sql_query(sql, engine)
 
